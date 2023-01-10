@@ -1,4 +1,7 @@
 # 코랩에서 실행
+# 강좌명: 파이썬 초보자도 웹 크롤링 2시간이면 됩니다ㅣNAVER 쇼핑 데이터 실습 따라하기
+# url: https://www.youtube.com/watch?v=a60FScYiuio
+
 !pip install selenium
 !apt-get update
 !apt install chromium-chromedriver
@@ -82,17 +85,13 @@ crawler.close()
 
 # ------------------------------------------------------------------------------------------------
 
-df = pd.DataFrame({'name':names, 'price':prices, 'review_cnt':review_cnts, 'link':links})
-
-# df = pd.DataFrame({'name':names})
-
-df
-
-# ------------------------------------------------------------------------------------------------
-
 df.to_csv('./best_sweet_potato.csv', sep =',', encoding='utf-8-sig')
 
 # ------------------------------------------------------------------------------------------------
+
+# [ 한글깨짐 방지 ]
+# 정보 출처: Colab) Wordcloud 한글이 보이지 않을 때, 워드클라우드 만들기, 주피터 노트북, R프로그램 KoNLP 설치 실패. 워드 클라우드 저장하는 코드
+# url: https://summerorange.tistory.com/entry/Colab-Wordcloud-%ED%95%9C%EA%B8%80%EC%9D%B4-%EB%B3%B4%EC%9D%B4%EC%A7%80-%EC%95%8A%EC%9D%84-%EB%95%8C-%EC%9B%8C%EB%93%9C%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C-%EC%A3%BC%ED%94%BC%ED%84%B0-%EB%85%B8%ED%8A%B8%EB%B6%81-R%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%A8-KoNLP-%EC%84%A4%EC%B9%98-%EC%8B%A4%ED%8C%A8%EC%8B%9C-%EC%9B%8C%EB%93%9C-%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C-%EB%A7%8C%EB%93%A4%EA%B3%A0-%EA%B7%B8%EB%A6%BC-%EC%A0%80%EC%9E%A5%ED%95%98%EB%8A%94-%EC%BD%94%EB%93%9C
 
 !pip install konlpy
 # 코랩에서 한글이 깨지는 이유? 한글 폰드 경로를 설정해주지 않아서임
@@ -107,6 +106,8 @@ df.to_csv('./best_sweet_potato.csv', sep =',', encoding='utf-8-sig')
 # [ f for f in sys_font if 'Nanum' in f]
 
 # ------------------------------------------------------------------------------------------------
+
+# [ WordCloud ]
 
 import sys
 from wordcloud import WordCloud
