@@ -26,6 +26,8 @@ chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument('--headless') # 창이 뜨지 않게? 코랩에서는 이렇게 해야 함
 chrome_options.add_argument('--no-sandbox')
 chrome_options.add_argument('--disable-dev-shm-usage')
+# 코랩에서 실행시 코드 오류 수정 참고 링크
+# 링크: https://blog.devgenius.io/use-selenium-webdriver-in-google-colab-d5f2dba1d9f5
 
 crawler = webdriver.Chrome('chromedriver', chrome_options=chrome_options)
 # driver.get(base_url)
