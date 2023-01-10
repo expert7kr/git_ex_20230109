@@ -1,0 +1,117 @@
+# 코랩에서 실행
+!pip install selenium
+!apt-get update
+!apt install chromium-chromedriver
+
+# ------------------------------------------------------------------------------------------------
+
+import time
+import pandas as pd
+
+from selenium import webdriver
+from urllib.request import urlopen
+from bs4 import BeautifulSoup as bs
+from urllib.parse import quote_plus
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+import time
+# chromedriver 가 따로 없음?
+# kword = input('검색어를 입력하세요 : ')
+# base_url = url + quote_plus(kword) # 한글 깨짐 방지 함수: quote_plus()
+
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument('--headless') # 창이 뜨지 않게? 코랩에서는 이렇게 해야 함
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('--disable-dev-shm-usage')
+
+crawler = webdriver.Chrome('chromedriver', chrome_options=chrome_options)
+# driver.get(base_url)
+crawler.implicitly_wait(10)
+crawler.get('https://www.naver.com/')
+
+url = f'https://search.shopping.naver.com/search/all?query=%EA%B3%A0%EA%B5%AC%EB%A7%88'
+crawler.get(url)
+ 
+# 리뷰 많은 순 클릭
+crawler.find_element('xpath', '//*[@id="__next"]/div/div[2]/div[2]/div[3]/div[1]/div[1]/div/div[1]/a[4]').click()
+from IPython.core.application import IPYTHON_SUPPRESS_CONFIG_ERRORS
+names = []
+prices = []
+review_cnts = []
+links = []
+
+# url = f'https://search.shopping.naver.com/search/all?frm=NVSHATC&origQuery=%EA%B3%A0%EA%B5%AC%EB%A7%88&pagingIndex={0}&pagingSize=40&productSet=total&query=%EA%B3%A0%EA%B5%AC%EB%A7%88&sort=rel&timestamp=&viewType=list'.format(i)
+for i in range(1,11):
+  # url_='https://search.shopping.naver.com/search/all?frm=NVSHATC&origQuery=%EA%B3%A0%EA%B5%AC%EB%A7%88&pagingIndex={0}&pagingSize=40&productSet=total&query=%EA%B3%A0%EA%B5%AC%EB%A7%88&sort=rel&timestamp=&viewType=list'.format(i)
+  url_= 'https://search.shopping.naver.com/search/all?frm=NVSHATC&origQuery=%EA%B3%A0%EA%B5%AC%EB%A7%88&pagingIndex={0}&pagingSize=40&productSet=total&query=%EA%B3%A0%EA%B5%AC%EB%A7%88&sort=review&timestamp=&timestamp=viewType=list'.format(i)
+  print(url_)
+  crawler.get('https://search.shopping.naver.com/search/all?frm=NVSHATC&origQuery=%EA%B3%A0%EA%B5%AC%EB%A7%88&pagingIndex={0}&pagingSize=40&productSet=total&query=%EA%B3%A0%EA%B5%AC%EB%A7%88&sort=review&timestamp=&timestamp=viewType=list'.format(i))
+  
+  print(i)
+  # 스크롤 내리기
+  time.sleep(5)
+  while True:
+    bh = crawler.execute_script("return document.body.scrollHeight") # before high, 브라우저 상의 처음 높이
+    print(bh)
+    time.sleep(7) # 기계로 인식?
+    # 스크롤 내리는 코드는?
+    crawler.execute_script("window.scrollTo(0, document.body.scrollHeight)")
+    time.sleep(5) # 스크롤 내릴 때 마다 버퍼링이 생김
+    ah = crawler.execute_script("return document.body.scrollHeight") # after high,스크롤 한 후의 높이
+    if ah == bh:
+       break
+    bh = ah
+    # print(bh, ah)
+    # class.name : basicList_info_area__TWvzp
+    infos = crawler.find_elements(By.CSS_SELECTOR, ".basicList_info_area__TWvzp")
+  for info in infos:
+    try:
+      name = info.find_element(By.CSS_SELECTOR, '.basicList_title__VfX3c').text
+      names.append(name) # 페이지당 40개씩 저장
+      # print(names.count)
+      price = info.find_element(By.CSS_SELECTOR, '.price_num__S2p_v').text
+      prices.append(price)
+      review_cnt = info.find_element(By.CSS_SELECTOR, '.basicList_num__sfz3h').text
+      review_cnts.append(review_cnt)
+      link = info.find_element(By.CSS_SELECTOR, 'a.basicList_link__JLQJf').get_attribute("href")
+      links.append(link)
+    except:
+      print('Exception') # 여기까지 이름 잘 가져오는지 보자
+
+crawler.close()
+
+# ------------------------------------------------------------------------------------------------
+
+df = pd.DataFrame({'name':names, 'price':prices, 'review_cnt':review_cnts, 'link':links})
+
+# df = pd.DataFrame({'name':names})
+
+df
+
+# ------------------------------------------------------------------------------------------------
+
+df.to_csv('./best_sweet_potato.csv', sep =',', encoding='utf-8-sig')
+
+# ------------------------------------------------------------------------------------------------
+
+!pip install konlpy
+# 코랩에서 한글이 깨지는 이유? 한글 폰드 경로를 설정해주지 않아서임
+!apt-get update -qq
+# 한글 폰트 나눔 폰트를 설치해준다.(그외 폰트 가능)
+!apt-get install fonts-nanum* -qq
+
+## 현제 폰트 리스트 확인
+# import matplotlib.font_manager as fm
+# sys_font = fm.findSystemFonts()
+
+# [ f for f in sys_font if 'Nanum' in f]
+
+# ------------------------------------------------------------------------------------------------
+
+import sys
+from wordcloud import WordCloud
+
+filename = sys.argv[1]
+wc = WordCloud(font_path='./NanumGothic.ttf', colormap='PuBu', width=500, height=500)
+wc.generate(str(df['name'])) # 데이터 프레임의 이름만 워드 크라우드 재료로 쓸거야
+wc.to_file('고구마.png')
