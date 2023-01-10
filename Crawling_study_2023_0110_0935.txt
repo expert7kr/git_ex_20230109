@@ -82,6 +82,7 @@ crawler.close()
 
 # ------------------------------------------------------------------------------------------------
 
+<<<<<<< HEAD
 df = pd.DataFrame({'name':names, 'price':prices, 'review_cnt':review_cnts, 'link':links})
 
 # df = pd.DataFrame({'name':names})
